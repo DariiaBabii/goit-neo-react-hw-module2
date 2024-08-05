@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import classes from "./App.module.css";
 
@@ -8,11 +8,16 @@ import Feedback from "./Feedback";
 import Notification from "./Notification";
 
 function App() {
-  const [feedbacks, setFeedback] = useState({
-    good: 0,
-    neutral: 0,
-    bad: 0,
+  const [feedbacks, setFeedback] = useState(() => {
+    const savedFeedbacks = localStorage.getItem("feedbacks");
+    return savedFeedbacks
+      ? JSON.parse(savedFeedbacks)
+      : { good: 0, neutral: 0, bad: 0 };
   });
+
+  useEffect(() => {
+    localStorage.setItem("feedbacks", JSON.stringify(feedbacks));
+  }, [feedbacks]);
 
   const total = feedbacks.good + feedbacks.neutral + feedbacks.bad;
   const positive = Math.round(
@@ -27,11 +32,7 @@ function App() {
   };
 
   const handleReset = () => {
-    setFeedback({
-      good: 0,
-      neutral: 0,
-      bad: 0,
-    });
+    setFeedback({ good: 0, neutral: 0, bad: 0 });
   };
 
   return (
